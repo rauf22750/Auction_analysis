@@ -1,0 +1,177 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Bidders Analysis
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-10">
+                        <select name="auction_id" id="auction-id-select" class="form-select">
+                            {% for auction in all_auctions %}
+                                <option value="{{ auction.0 }}" {% if auction.0 == auction_id %}selected{% endif %}>
+                                    {{ auction.0 }} - {{ auction.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                User Bidding
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="winLossChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Total Bids by Top Bidders
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="totalBidsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Detailed Bidder Statistics
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                       <thead>
+                            <tr>
+                                <th>Bidder ID</th>
+                                <th>Total Bids</th>
+                                <th>Total Products</th>
+                                <th>Win Products</th>
+                                <th>Win Bids</th>
+                                <th>Lost Bids</th>
+                                <th>Pending Bids</th>
+                                <th>Wining Ratio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bidder in top_bidders %}
+                            <tr>
+                                <td>{{ bidder.user_id }}</td>
+                                <td>{{ bidder.total_bids }}</td>
+                                <td>{{ bidder.total_products }}</td>
+                                <td>{{ bidder.win_products }}</td>
+                                <td>{{ bidder.win_bids }}</td>
+                                <td>{{ bidder.lost_bids }}</td>
+                                <td>{{ bidder.pending_bids}}
+                                <td>{{ bidder.win_rate|floatformat:1 }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-secondary export-btn" data-type="top_bidders">
+                    <i class="bi bi-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/dashboard/js/charts.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart data from backend
+        const chartData = {{ chart_data|safe }};
+        
+        // Extract data for charts
+        const bidders = chartData.map(item => item.bidder);
+        const winBids = chartData.map(item => item.winBids);
+        const lostBids = chartData.map(item => item.lostBids);
+        const pendingBids = chartData.map(item => item.pendingBids);
+        const totalBids = chartData.map(item => item.totalBids);
+        
+        // Win/Loss Chart
+        const winLossCtx = document.getElementById('winLossChart').getContext('2d');
+        const winLossChart = new Chart(winLossCtx, {
+            type: 'bar',
+            data: {
+                labels: bidders,
+                datasets: [
+                    {
+                        label: 'Win Bids',
+                        backgroundColor: 'rgba(54, 162, 235, 1)',
+                        data: winBids
+                    },
+                    {
+                        label: 'Lost Bids',
+                        backgroundColor: 'rgba(255, 99, 132, 1)',
+                        data: lostBids
+                    },
+                    {
+                        label: 'Pending Bids',
+                        backgroundColor: 'rgba(255, 206, 86, 1)',
+                        data: pendingBids
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: true,
+                    },
+                    y: {
+                        stacked: true
+                    }
+                }
+            }
+        });
+        
+        // Total Bids Chart
+        const totalBidsCtx = document.getElementById('totalBidsChart').getContext('2d');
+        const totalBidsChart = new Chart(totalBidsCtx, {
+            type: 'bar',
+            data: {
+                labels: bidders,
+                datasets: [{
+                    label: 'Total Bids',
+                    backgroundColor: 'rgba(54, 162, 235, 1)',
+                    data: totalBids
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    });
+    </script>
+{% endblock %}

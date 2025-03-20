@@ -1,0 +1,248 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Search Auction
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-10">
+                        <select name="auction_id" id="auction-id-select" class="form-select">
+                            {% for auction in all_auctions %}
+                                <option value="{{ auction.0 }}" {% if auction.0 == auction_id %}selected{% endif %}>
+                                    {{ auction.0 }} - {{ auction.1 }}
+                                </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </form>
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Total Products</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ summary.total_products }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Total Bids</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ summary.total_bids }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Auto Bids</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ summary.auto_bids }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Manual Bids</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ summary.manual_bids }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Auto vs Manual Bids
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="autoVsManualChart"></canvas>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-secondary export-btn" data-type="auto_vs_manual">
+                    <i class="bi bi-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Top 10 Products
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="topProductsChart"></canvas>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-secondary export-btn" data-type="top_products">
+                    <i class="bi bi-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Auto Bids Sequence Dropdown -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Auto Bids in Sequence
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bid ID</th>
+                                <th>Product ID</th>
+                                <th>User ID</th>
+                                <th>Bid Amount</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bid in auto_bids|slice:":10" %}
+                            <tr>
+                                <td>{{ bid.id }}</td>
+                                <td>{{ bid.product_id }}</td>
+                                <td>{{ bid.user_id }}</td>
+                                <td>${{ bid.bid_amount }}</td>
+                                <td>{{ bid.bidding_datetime }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if auto_bids|length > 10 %}
+                <div class="mt-3">
+                    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#allAutoBids" aria-expanded="false" aria-controls="allAutoBids">
+                        Show All Auto Bids ({{ auto_bids|length }})
+                    </button>
+                    
+                    <div class="collapse mt-3" id="allAutoBids">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Bid ID</th>
+                                        <th>Product ID</th>
+                                        <th>User ID</th>
+                                        <th>Bid Amount</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for bid in auto_bids %}
+                                    <tr>
+                                        <td>{{ bid.id }}</td>
+                                        <td>{{ bid.product_id }}</td>
+                                        <td>{{ bid.user_id }}</td>
+                                        <td>${{ bid.bid_amount }}</td>
+                                        <td>{{ bid.bidding_datetime }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div> 
+{% comment %} 
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Top 10 Bidders
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bidder ID</th>
+                                <th>Total Bids</th>
+                                <th>Won</th>
+                                <th>Lost</th>
+                                <th>Win Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bidder in top_bidders %}
+                            <tr>
+                                <td>{{ bidder.user_id }}</td>
+                                <td>{{ bidder.total_bids }}</td>
+                                <td>{{ bidder.won }}</td>
+                                <td>{{ bidder.lost }}</td>
+                                <td>{{ bidder.win_rate|floatformat:1 }}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-secondary export-btn" data-type="top_bidders">
+                    <i class="bi bi-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/dashboard/js/charts.js"></script>
+<script>
+    // Initialize charts when the document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto vs Manual Bids Chart
+        const autoVsManualData = {{ auto_vs_manual|safe }};
+        createLineChart('autoVsManualChart', autoVsManualData, 'bid_date', 
+            [
+                {key: 'auto', label: 'Auto Bids', color: 'rgba(54, 162, 235, 1)', bgColor: 'rgba(54, 162, 235, 0.2)'},
+                {key: 'manual', label: 'Manual Bids', color: 'rgba(255, 99, 132, 1)', bgColor: 'rgba(255, 99, 132, 0.2)'}
+            ]
+        );
+        
+        // Top Products Chart
+        const topProductsData = {{ top_products_json|safe }};
+        createStackedBarChart('topProductsChart', topProductsData, 'product_id',
+            [
+                {key: 'auto', label: 'Auto Bids', color: 'rgba(54, 162, 235, 0.7)'},
+                {key: 'manual', label: 'Manual Bids', color: 'rgba(255, 99, 132, 0.7)'}
+            ]
+        );
+    });
+</script>
+{% endblock %}

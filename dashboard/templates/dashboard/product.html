@@ -1,0 +1,155 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Product Analysis
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <label for="auction_id" class="form-label">Auction ID</label>
+                        <select name="auction_id" id="auction-id-select" class="form-select">
+                            {% for auction in all_auctions %}
+                                <option value="{{ auction.0 }}" {% if auction.0 == auction_id %}selected{% endif %}>
+                                    {{ auction.0 }} - {{ auction.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label for="product_id" class="form-label">Product ID</label>
+                        <select name="product_id" id="product-id-select" class="form-select">
+                            <option value="">Select a product</option>
+                            {% for product in auction_products %}
+                            <option value="{{ product.id }}" {% if product.id|stringformat:'s' == product_id|stringformat:'s' %}selected{% endif %}>
+                                {{ product.title }} (ID: {{ product.id }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if product_details %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header">Total Bids</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ product_details.basic_stats.total_bids }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header">Highest Bid</div>
+            <div class="card-body">
+                <h5 class="card-title">${{ product_details.basic_stats.highest_bid }}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-header">Unique Bidders</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ product_details.basic_stats.unique_bidders }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Bid History
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="bidHistoryChart"></canvas>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline-secondary export-btn" data-type="product_details" data-product="{{ product_id }}">
+                    <i class="bi bi-download"></i> Export CSV
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Top Bidders for This Product
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Bidder ID</th>
+                                <th>Number of Bids</th>
+                                <th>Highest Bid</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bidder in top_bidders %}
+                            <tr>
+                                <td>{{ bidder.user_id }}</td>
+                                <td>{{ bidder.bids }}</td>
+                                <td>${{ bidder.highest_bid }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            {% if auction_products %}
+                Please select a product from the dropdown to view product analysis.
+            {% else %}
+                No products found for this auction. Please try a different auction ID.
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/dashboard/js/charts.js"></script>
+{% if product_details %}
+<script>
+    // Initialize charts when the document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bid History Chart
+        const bidHistoryData = {{ bid_history|safe }};
+        createLineChart('bidHistoryChart', bidHistoryData, 'date', 
+            [
+                {key: 'auto', label: 'Auto Bids', color: 'rgba(54, 162, 235, 1)', bgColor: 'rgba(54, 162, 235, 0.2)'},
+                {key: 'manual', label: 'Manual Bids', color: 'rgba(255, 99, 132, 1)', bgColor: 'rgba(255, 99, 132, 0.2)'}
+            ]
+        );
+    });
+</script>
+{% endif %}
+{% endblock %}
