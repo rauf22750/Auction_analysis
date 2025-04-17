@@ -1,52 +1,52 @@
-# # Python
-# *.pyc
-# *.pyo
-# *.pyd
-# __pycache__/
-# *.sqlite3
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
 
-# # Django stuff
-# *.log
-# *.pot
-# *.py[cod]
-# *.sqlite3
-# db.sqlite3
+# Django stuff
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
+db.sqlite3
 
-# # Environment
-# .env
-# .env.*
+# Environment
+.env
+.env.*
 
-# # Virtual environment
-# venv/
-# env/
-# ENV/
-# .venv/
-# .pyenv/
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.pyenv/
 
-# # VS Code settings
-# .vscode/
+# VS Code settings
+.vscode/
 
-# # macOS / Linux / Windows system files
-# .DS_Store
-# Thumbs.db
+# macOS / Linux / Windows system files
+.DS_Store
+Thumbs.db
 
-# # Migrations (optional)
-# */migrations/__pycache__/
-# */migrations/*.pyc
-# */migrations/*.pyo
-# */migrations/*.pyd
+# Migrations (optional)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.pyd
 
-# # Static and media files (optional - if generated)
-# staticfiles/
-# media/
+# Static and media files (optional - if generated)
+staticfiles/
+media/
 
-# # Test and coverage
-# htmlcov/
-# .coverage
-# .tox/
-# .pytest_cache/
+# Test and coverage
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
 
-# # MyPy and other tools
-# .mypy_cache/
-# .dmypy.json
-# .pyre/
+# MyPy and other tools
+.mypy_cache/
+.dmypy.json
+.pyre/
