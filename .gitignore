@@ -1,16 +1,52 @@
-# Django stuff
+# Python
 *.pyc
+*.pyo
+*.pyd
 __pycache__/
+*.sqlite3
+
+# Django stuff
+*.log
+*.pot
+*.py[cod]
+*.sqlite3
 db.sqlite3
 
 # Environment
 .env
-.env*.local
+.env.*
 
-# VSCode and system files
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.pyenv/
+
+# VS Code settings
 .vscode/
-*.log
 
-# Static & media (optional)
+# macOS / Linux / Windows system files
+.DS_Store
+Thumbs.db
+
+# Migrations (optional)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.pyd
+
+# Static and media files (optional - if generated)
 staticfiles/
 media/
+
+# Test and coverage
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+
+# MyPy and other tools
+.mypy_cache/
+.dmypy.json
+.pyre/
