@@ -62,5 +62,5 @@ python manage.py runserver
 Access the application at `http://127.0.0.1:2222/`
 
 
-### Acknowledgements
+### 8. Acknowledgements
 - Django Framework
