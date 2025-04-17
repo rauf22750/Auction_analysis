@@ -4,7 +4,7 @@ __pycache__/
 db.sqlite3
 
 # Environment
-.env
+.env*.local
 
 # VSCode and system files
 .vscode/
