@@ -1,1 +1,15 @@
-.env*
+# Django stuff
+*.pyc
+__pycache__/
+db.sqlite3
+
+# Environment
+.env
+
+# VSCode and system files
+.vscode/
+*.log
+
+# Static & media (optional)
+staticfiles/
+media/
