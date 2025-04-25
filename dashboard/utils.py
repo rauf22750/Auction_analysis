@@ -400,14 +400,14 @@ def get_auto_bids_sequence(auction_id):
     return bids
 
 def get_all_auctions():
-    """Get all available auction IDs along with their created_at timestamp and handle from both tables"""
+    """Get all available auction IDs along with their created_at timestamp and handle from both tables """
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT auction_shopify_id, handle, MAX(created_at) as created_at
-            FROM shopify_auction_all_listings 
+            FROM shopify_auction_all_listings
             GROUP BY auction_shopify_id, handle
             ORDER BY created_at DESC
         """)
         auctions = cursor.fetchall()
-    
     return auctions
+
