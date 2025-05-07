@@ -18,7 +18,7 @@ def index(request):
     
     # Get all available auctions (returns a list of tuples: (auction_shopify_id, handle, created_at))
     all_auctions = get_all_auctions()
-    
+     
     # If no auction_id is provided but we have auctions, use the first one
     if not auction_id and all_auctions:
         auction_id = all_auctions[0][0]

@@ -411,3 +411,5 @@ def get_all_auctions():
         auctions = cursor.fetchall()
     return auctions
 
+ 
+
